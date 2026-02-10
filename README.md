@@ -43,6 +43,8 @@ aicron config delete prompt_command
 
 The prompt text will be appended as the final argument to your configured command.
 
+**Note:** Crontab entries bake in the `PATH` from when the job was created. If you change `prompt_command` to a binary that lives outside that PATH, existing jobs may fail to find it. Either re-create affected jobs after switching, or use an absolute path in your command (e.g. `"/usr/local/bin/opencode" run`).
+
 ## Quick start
 
 ```sh
