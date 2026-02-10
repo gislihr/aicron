@@ -1,0 +1,9 @@
+{
+  "name": "aicron",
+  "version": "1.0.0",
+  "description": "Schedule Claude prompts via cron",
+  "type": "module",
+  "bin": {
+    "aicron": "src/index.ts"
+  }
+}
