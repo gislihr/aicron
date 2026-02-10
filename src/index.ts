@@ -7,6 +7,7 @@ import { runCommand } from "./commands/run.ts";
 import { showCommand } from "./commands/show.ts";
 import { removeCommand } from "./commands/remove.ts";
 import { pauseCommand, resumeCommand } from "./commands/pause.ts";
+import { configCommand } from "./commands/config.ts";
 import { c } from "./utils.ts";
 
 const args = process.argv.slice(2);
@@ -24,6 +25,7 @@ ${c.bold("Usage:")}
   aicron ${c.cyan("remove <id>")}      Delete a job and its cron entry
   aicron ${c.cyan("pause <id>")}       Disable a job
   aicron ${c.cyan("resume <id>")}      Re-enable a paused job
+  aicron ${c.cyan("config")}           Manage configuration
 `);
 }
 
@@ -55,6 +57,9 @@ async function main(): Promise<void> {
       break;
     case "resume":
       await resumeCommand(args.slice(1));
+      break;
+    case "config":
+      configCommand(args.slice(1));
       break;
     case "help":
     case "--help":

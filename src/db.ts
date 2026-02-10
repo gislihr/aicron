@@ -34,6 +34,12 @@ function migrate(db: Database): void {
       exit_code   INTEGER
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS config (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
   // Create indexes if they don't exist
   db.run("CREATE INDEX IF NOT EXISTS idx_runs_job_id ON runs(job_id)");
   db.run("CREATE INDEX IF NOT EXISTS idx_runs_started_at ON runs(started_at)");
@@ -128,4 +134,27 @@ export function getLastRun(jobId: number): Run | null {
   return db
     .query("SELECT * FROM runs WHERE job_id = ? ORDER BY started_at DESC LIMIT 1")
     .get(jobId) as Run | null;
+}
+
+// Config queries
+export function getConfig(key: string): string | null {
+  const db = getDb();
+  const row = db.query("SELECT value FROM config WHERE key = ?").get(key) as { value: string } | null;
+  return row?.value ?? null;
+}
+
+export function setConfig(key: string, value: string): void {
+  const db = getDb();
+  db.run("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)", [key, value]);
+}
+
+export function getAllConfig(): Record<string, string> {
+  const db = getDb();
+  const rows = db.query("SELECT key, value FROM config").all() as { key: string; value: string }[];
+  return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+}
+
+export function deleteConfig(key: string): void {
+  const db = getDb();
+  db.run("DELETE FROM config WHERE key = ?", [key]);
 }

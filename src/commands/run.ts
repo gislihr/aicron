@@ -1,4 +1,4 @@
-import { getJob, createRun, finishRun } from "../db.ts";
+import { getJob, createRun, finishRun, getConfig } from "../db.ts";
 import { whichSync } from "../utils.ts";
 
 const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
@@ -20,11 +20,17 @@ export async function runCommand(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  const claudePath = whichSync("claude");
+  // Get the configured prompt command, default to "claude -p"
+  const promptCmd = getConfig("prompt_command") ?? "claude -p";
+  const cmdParts = promptCmd.split(" ");
+  const binary = cmdParts[0];
+  const cmdArgs = cmdParts.slice(1);
+  
+  const binaryPath = whichSync(binary);
   const runId = createRun(id);
 
   try {
-    const proc = Bun.spawn([claudePath, "-p", job.prompt], {
+    const proc = Bun.spawn([binaryPath, ...cmdArgs, job.prompt], {
       stdout: "pipe",
       stderr: "pipe",
       timeout: TIMEOUT_MS,
