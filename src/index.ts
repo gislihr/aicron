@@ -18,8 +18,8 @@ ${c.bold("aicron")} — Schedule Claude prompts via cron
 
 ${c.bold("Usage:")}
   aicron ${c.cyan("'prompt text'")}    Create a new scheduled job
-  aicron ${c.cyan("list")}             List all jobs
-  aicron                    Show last 10 run results
+  aicron                    List all jobs
+  aicron ${c.cyan("runs")}             Show last 10 run results
   aicron ${c.cyan("show <id>")}        Show job details + recent runs
   aicron ${c.cyan("remove <id>")}      Delete a job and its cron entry
   aicron ${c.cyan("pause <id>")}       Disable a job
@@ -28,15 +28,18 @@ ${c.bold("Usage:")}
 }
 
 async function main(): Promise<void> {
-  // No args → show recent runs
+  // No args → list jobs
   if (!command) {
-    recentCommand();
+    await listCommand();
     return;
   }
 
   switch (command) {
     case "list":
-      listCommand();
+      await listCommand();
+      break;
+    case "runs":
+      await recentCommand();
       break;
     case "show":
       showCommand(args.slice(1));
