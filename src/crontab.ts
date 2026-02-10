@@ -39,7 +39,8 @@ export async function installCronEntry(
   home: string
 ): Promise<void> {
   const existing = await readCrontab();
-  const line = `${schedule} HOME=${home} ${bunPath} ${entryPath} run ${jobId} >> ~/.aicron/cron.log 2>&1`;
+  const path = process.env.PATH ?? "";
+  const line = `${schedule} PATH=${path} HOME=${home} ${bunPath} ${entryPath} run ${jobId} >> ~/.aicron/cron.log 2>&1`;
   const entry = `${marker(jobId)}\n${line}`;
 
   // Remove existing entry for this job if any
